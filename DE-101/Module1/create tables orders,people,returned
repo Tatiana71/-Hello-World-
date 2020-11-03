@@ -1,0 +1,67 @@
+-- Table: public.orders
+
+-- DROP TABLE public.orders;
+
+CREATE TABLE public.orders
+(
+    "Row ID" integer NOT NULL,
+    "Order_ID" text COLLATE pg_catalog."default",
+    "Order Date" date,
+    "Ship Date" date,
+    "Ship Mode" text COLLATE pg_catalog."default",
+    "Customer ID" text COLLATE pg_catalog."default",
+    "Customer Name" text COLLATE pg_catalog."default",
+    "Segment" text COLLATE pg_catalog."default",
+    "Country" text COLLATE pg_catalog."default",
+    "City" text COLLATE pg_catalog."default",
+    "State" text COLLATE pg_catalog."default",
+    "Postal Code" text COLLATE pg_catalog."default" NOT NULL,
+    "Region" text COLLATE pg_catalog."default",
+    "Product ID" text COLLATE pg_catalog."default",
+    "Category" text COLLATE pg_catalog."default",
+    "Sub-Category" text COLLATE pg_catalog."default",
+    "Product Name" text COLLATE pg_catalog."default",
+    "Sales" numeric,
+    "Quantity" integer,
+    "Discount" numeric,
+    "Profit" numeric,
+    CONSTRAINT order_pkey PRIMARY KEY ("Row ID")
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE public.orders
+    OWNER to postgres;
+    
+  --------------------------------------------------------------------------------  
+    
+    -- Table: public.people
+
+-- DROP TABLE public.people;
+
+CREATE TABLE public.people
+(
+    "Person" text COLLATE pg_catalog."default" NOT NULL,
+    "Region" text COLLATE pg_catalog."default" NOT NULL
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE public.people
+    OWNER to postgres;
+    
+ ------------------------------------------------------------------------   
+    -- Table: public.returned
+
+-- DROP TABLE public.returned;
+
+CREATE TABLE public.returned
+(
+    "Returned" text COLLATE pg_catalog."default" NOT NULL,
+    "Order_ID" text COLLATE pg_catalog."default"
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE public.returned
+    OWNER to postgres;
