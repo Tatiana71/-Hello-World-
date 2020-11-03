@@ -1,1 +1,134 @@
 
+CREATE TABLE "customer"
+(
+ "customer_id"   text NOT NULL,
+ "customer_name" text NOT NULL,
+ "segment"       text NOT NULL,
+ CONSTRAINT "PK_castomer" PRIMARY KEY ( "customer_id" )
+);
+
+INSERT INTO "customer"
+SELECT "Customer ID","Customer Name","Segment"
+FROM (SELECT DISTINCT "Customer ID","Customer Name","Segment" FROM "orders") AS "A"
+
+
+CREATE TABLE "geo"
+(
+ "geo_id"      int NOT NULL,
+ "Country"     text NOT NULL,
+ "State"       text NOT NULL,
+ "City"        text NOT NULL,
+ "Postal Code" text NULL,
+ CONSTRAINT "PK_geo" PRIMARY KEY ( "geo_id" )
+);
+INSERT INTO "geo"
+SELECT 100+ROW_NUMBER() OVER(),"Country","State","City","Postal Code"
+FROM (SELECT DISTINCT "Country","State","City","Postal Code" FROM "orders") AS "B"
+
+
+CREATE TABLE "person"
+(
+ "person_id" text NOT NULL,
+ "person"    text NOT NULL,
+ "region"    text NOT NULL,
+ CONSTRAINT "PK_person" PRIMARY KEY ( "person_id" )
+);
+INSERT INTO "person"
+SELECT 100+ROW_NUMBER() OVER (),"Person","Region" 
+FROM (SELECT DISTINCT "Person","Region" FROM "people") AS "C"
+
+
+
+CREATE TABLE "product"
+(
+ "product_id"   text NOT NULL,
+ "product_name" text NOT NULL,
+ "Category"     text NOT NULL,
+ "Sub-Category" text NOT NULL,
+ 
+ CONSTRAINT "PK_product" PRIMARY KEY ( "product_id","product_name" )
+);
+
+INSERT INTO "product"
+SELECT "Product ID","Product Name","Category","Sub-Category"
+FROM (SELECT DISTINCT "Product ID","Product Name","Category","Sub-Category" FROM "orders") AS "D"
+
+
+
+CREATE TABLE "public"."orderss"
+(
+ "row_orderss" int NOT NULL,
+ "order_date"  date NOT NULL,
+ "ship_date"   date NOT NULL,
+ "ship_mode"   text NOT NULL,
+ "order_id"    text NOT NULL,
+ CONSTRAINT "PK_orders" PRIMARY KEY ( "row_orderss" )
+);
+
+INSERT INTO "orderss"
+SELECT 100+ROW_NUMBER() OVER (),"Order Date","Ship Date","Ship Mode","Order_ID"
+FROM(SELECT DISTINCT "Order Date","Ship Date","Ship Mode","Order_ID" FROM "orders") AS "V"
+
+
+CREATE TABLE "sales_fact"
+(
+ "row_id"         int NOT NULL,
+ "sales"          int NOT NULL,
+ "quantity"       int NOT NULL,
+ "discount"       int NOT NULL,
+ "profit"         int NOT NULL,
+ "returned"       text NULL,
+ "product_id"     text NOT NULL,
+ "customer_id"    text NOT NULL,
+ "geo_id"         int NOT NULL,
+ "row_orderss"    int NOT NULL,
+ "person_id"      text NOT NULL,
+ "product_name" text NOT NULL,
+ CONSTRAINT "PK_sales_fact" PRIMARY KEY ( "row_id" ),
+ CONSTRAINT "FK_141" FOREIGN KEY ( "product_id", "product_name" ) REFERENCES "product" ( "product_id", "product_name" ),
+ CONSTRAINT "FK_145" FOREIGN KEY ( "customer_id" ) REFERENCES "customer" ( "customer_id" ),
+ CONSTRAINT "FK_151" FOREIGN KEY ( "geo_id" ) REFERENCES "geo" ( "geo_id" ),
+ CONSTRAINT "FK_154" FOREIGN KEY ( "row_orderss" ) REFERENCES "public"."orderss" ( "row_orderss" ),
+ CONSTRAINT "FK_157" FOREIGN KEY ( "person_id" ) REFERENCES "person" ( "person_id" )
+);
+
+CREATE INDEX "fkIdx_141" ON "sales_fact"
+(
+ "product_id",
+ "product_name"
+);
+
+CREATE INDEX "fkIdx_145" ON "sales_fact"
+(
+ "customer_id"
+);
+
+CREATE INDEX "fkIdx_151" ON "sales_fact"
+(
+ "geo_id"
+);
+
+CREATE INDEX "fkIdx_154" ON "sales_fact"
+(
+ "row_orderss"
+);
+
+CREATE INDEX "fkIdx_157" ON "sales_fact"
+(
+ "person_id"
+);
+
+INSERT INTO "sales_fact"
+SELECT  "Row ID","Sales","Quantity","Discount","Profit","Returned","product_id","customer_id","geo_id","row_orderss","person_id","product_name"
+FROM  "orders" LEFT JOIN (SELECT DISTINCT * FROM "returned") AS "A_A" ON "orders"."Order_ID"="A_A"."Order_ID"
+LEFT JOIN "product" ON "orders"."Product ID"="product"."product_id" AND "orders"."Product Name"="product"."product_name"
+LEFT JOIN "customer" ON "orders"."Customer ID"="customer"."customer_id"
+LEFT JOIN "geo" ON "orders"."Postal Code"="geo"."Postal Code" AND "orders"."City"="geo"."City"
+LEFT JOIN "orderss" ON "orders"."Order_ID"="orderss"."order_id" AND "orders"."Order Date"="orderss"."order_date"
+LEFT JOIN "person" ON "orders"."Region"="person"."region"
+ORDER BY "Row ID"
+
+
+
+
+
